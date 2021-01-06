@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-
+<?php include('./php/utilities.php'); ?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -178,17 +178,17 @@
                                             <p class="text-primary m-0 font-weight-bold" style="filter: contrast(200%) saturate(0%);">Create Plant</p>
                                         </div>
                                         <div class="card-body">
-                                            <form>
-                                                <div class="form-group"><label for="address"><strong>Name</strong></label><input class="form-control" type="text" name="address"></div>
+                                            <form action="" method="post">
+                                                <div class="form-group"><label for="name"><strong>Name</strong></label><input class="form-control" type="text" name="plant-name" value="<?php echo $_POST['plant-name']; ?>"></div>
                                                 <div class="form-row">
                                                     <div class="col">
-                                                        <div class="form-group"><label for="city"><strong>Description</strong></label><input class="form-control" type="text" name="city"></div>
+                                                        <div class="form-group"><label for="city"><strong>Description</strong></label><input class="form-control" type="text" name="plant-descriptor" value="<?php echo $_POST['plant-descriptor']; ?>"></div>
                                                     </div>
                                                     <div class="col">
-                                                        <div class="form-group"><label for="country"><strong>Environment</strong></label><input class="form-control" type="text" name="country"></div>
+                                                        <div class="form-group"><label for="country"><strong>Environment</strong></label><input class="form-control" type="text" name="environment"></div>
                                                     </div>
                                                 </div>
-                                                <div class="form-group"><button class="btn btn-primary btn-sm" type="submit" style="background: var(--success);">Save&nbsp;Settings</button></div>
+                                                <div class="form-group"><button class="btn btn-primary btn-sm" type="submit" name="create_plant" style="background: var(--success);">Create</button></div>
                                             </form>
                                         </div>
                                     </div>
@@ -206,6 +206,33 @@
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+
+    <?php
+        if(isset($_POST['create_plant'])) {
+            $name = htmlspecialchars($_REQUEST['plant-name']);
+            $description = htmlspecialchars($_REQUEST['plant-descriptor']);
+            
+            if(empty($name) || empty($description)) {
+                alert("Unable to create the plant. Missing required field!");
+            } else {
+                
+                $result = createPlant($name, $description);
+                if ($result) {
+                    alert("Successfully created plant!");
+                } else {
+                    alert("Unable to create the plant. Something went wrong!");
+                }
+                
+                $_POST['plant-name'] = '';
+                $_POST['plant-descriptor'] = '';
+            }
+
+            
+//            alert("$name, $description");
+            
+        }
+    ?>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/chart.min.js"></script>
