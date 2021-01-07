@@ -6,13 +6,16 @@
         
         $table_rows = "";
         foreach ($decoded_response as $result_object) {
+        $owner = $result_object["owner"];
+        $environment = $result_object["environment"];
+            
         $table_row = <<<EOT
           <tr>
           <td><img class="rounded-circle mr-2" width="30" height="30" src="assets/img/plant.svg">$result_object[name]</td>
               <td>$result_object[description]</td>
-              <td>Owner Name</td>
-              <td>Rosi's Bedroom</td>
-              <td>01/01/2021</td>
+              <td>$owner[first_name] $owner[last_name]</td>
+              <td>$environment[name]</td>
+              <td>$result_object[creation_date]</td>
           </tr>
 EOT;
             $table_rows .= $table_row;
