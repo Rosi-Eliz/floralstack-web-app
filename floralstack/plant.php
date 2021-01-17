@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php require_once('./php/utilities.php'); ?>
+<?php require_once('./php/utilities.php');
+    $id = $_GET['id'];
+    $plant = getPlant($id);
+    $owner = $plant['owner'];
+    $environment = $plant['environment'];
+    $calibrated_sensors = $plant['calibrated_sensors_list'];
+    $static_sensors = $plant['static_sensors_list'];
+    ?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Profile - Brand</title>
+    <title>Blank Page - Brand</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=ABeeZee">
@@ -12,6 +19,7 @@
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/fontawesome5-overrides.min.css">
     <link rel="stylesheet" href="assets/css/styles.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
 </head>
 
 <body id="page-top">
@@ -24,7 +32,7 @@
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
                     <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link active" href="entities.html"><i class="fas fa-user"></i><span>Entities</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="entities.html"><i class="fas fa-user"></i><span>Entities</span></a></li>
                     <li class="nav-item"><a class="nav-link" href="table.html"><i class="fas fa-table"></i><span>Plants</span></a></li>
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
@@ -37,9 +45,7 @@
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
                         <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                <div class="input-group-append"><button class="btn btn-primary py-0" type="button" style="color: var(--white);background: var(--success);border-color: var(--green);"><i class="fas fa-search"></i></button></div>
-                            </div>
+                            <div class="input-group"></div>
                         </form>
                         <ul class="nav navbar-nav flex-nowrap ml-auto">
                             <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
@@ -94,8 +100,90 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Entities</h3>
+                    <h3 class="text-dark mb-4"><?php echo $plant['name'] ?></h3>
                     <div class="row mb-3">
+                        <div class="col-lg-4 col-xl-4 offset-xl-0">
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="assets/img/plant.svg" width="160" height="160">
+                                    <div class="mb-3"></div>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow" style="padding: 20px;">
+                                    <div class="mb-3"></div><button class="btn btn-primary" type="button" style="margin: -12px 16px 0px 0px;">Update</button><button class="btn btn-primary" type="button" style="margin: -12px 0px 0px 0px;">Delete</button>
+                                    <div class="btn-group" role="group"></div>
+                                    <div class="btn-toolbar">
+                                        <div class="btn-group" role="group"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col" id="details-column">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="text-primary font-weight-bold m-0">Details</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="col">
+                                        <div class="form-group"><label for="owner_name"><strong>Owner</strong></label></div>
+                                        <p><?php echo "${owner['first_name']} {$owner['last_name']}" ?></p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="environment"><strong>Environment</strong></label></div>
+                                        <p><?php echo $environment['name'] ?></p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="description"><strong>Description</strong></label></div>
+                                        <p><?php echo $plant['description'] ?></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <?php echo populate_static_sensor_table($plant, $static_sensors) ?>
+                            <div class="card shadow mb-3">
+                                <div class="card-header py-3">
+                                    <p class="text-primary m-0 font-weight-bold">Calibrated Sensors</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th id="calibbrated-sensors-header-row">Name</th>
+                                                    <th id="calibbrated-sensors-header-row">Priority</th>
+                                                    <th id="calibbrated-sensors-header-row">Identifier</th>
+                                                    <th id="calibbrated-sensors-header-row">Range</th>
+                                                    <th id="calibbrated-sensors-header-row">Threshold</th>
+                                                    <th id="calibbrated-sensors-header-row">UOM</th>
+                                                    <th id="calibbrated-sensors-header-row">Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Moisture Sensor</td>
+                                                    <td>an4M12</td>
+                                                    <td>12.45-24.56</td>
+                                                    <td>20</td>
+                                                    <td>0</td>
+                                                    <td>ml/deg</td>
+                                                    <td>Upper bound</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Light Sensor</td>
+                                                    <td>di8M3</td>
+                                                    <td>0.002-0.234</td>
+                                                    <td>0.050</td>
+                                                    <td>-0.032</td>
+                                                    <td>lx/cm^2</td>
+                                                    <td>Lower bound</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-lg-8">
                             <div class="row mb-3 d-none">
                                 <div class="col">
@@ -127,76 +215,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="card shadow mb-3">
-                                        <div class="card-header py-3">
-                                            <p class="text-primary m-0 font-weight-bold" style="color: var(--success);filter: contrast(200%) saturate(0%);font-size: 16px;">Create User</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <form>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="username"><strong>Username</strong></label><input class="form-control" type="text" name="username"></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="email"><strong>Email Address</strong></label><input class="form-control" type="email" name="email"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="first_name"><strong>First Name</strong></label><input class="form-control" type="text" name="first_name"></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="last_name"><strong>Last Name</strong></label><input class="form-control" type="text" name="last_name"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group"><button class="btn btn-primary btn-sm" type="submit" style="background: var(--success);">Create</button></div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="card shadow mb-3">
-                                        <div class="card-header py-3">
-                                            <p class="text-primary m-0 font-weight-bold" style="color: var(--orange);filter: saturate(0%);">Create Environment</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <form>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="username"><strong>Name</strong></label><input class="form-control" type="text" name="username"></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="email"><strong>Description</strong></label><input class="form-control" type="email" name="email"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group"><button class="btn btn-primary btn-sm" type="submit" style="background: var(--success);">Create</button></div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                    <div class="card shadow">
-                                        <div class="card-header py-3">
-                                            <p class="text-primary m-0 font-weight-bold" style="filter: contrast(200%) saturate(0%);">Create Plant</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <form action="" method="post">
-                                                <div class="form-group"><label for="name"><strong>Name</strong></label><input class="form-control" type="text" name="plant-name" value="<?php echo $_POST['plant-name']; ?>"></div>
-                                                <div class="form-row">
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="city"><strong>Description</strong></label><input class="form-control" type="text" name="plant-descriptor" value="<?php echo $_POST['plant-descriptor']; ?>"></div>
-                                                    </div>
-                                                    <div class="col">
-                                                        <div class="form-group"><label for="country"><strong>Environment</strong></label><input class="form-control" type="text" name="environment"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group"><button class="btn btn-primary btn-sm" type="submit" name="create_plant" style="background: var(--success);">Create</button></div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                    <div class="card shadow mb-5"></div>
                 </div>
             </div>
             <footer class="bg-white sticky-footer">
@@ -207,35 +227,70 @@
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
 
-    <?php
-        if(isset($_POST['create_plant'])) {
-            $name = htmlspecialchars($_REQUEST['plant-name']);
-            $description = htmlspecialchars($_REQUEST['plant-descriptor']);
-            
-            if(empty($name) || empty($description)) {
-                alert("Unable to create the plant. Missing required field!");
-            } else {
-                
-                $result = createPlant($name, $description);
-                if ($result) {
-                    alert("Successfully created plant!");
-                } else {
-                    alert("Unable to create the plant. Something went wrong!");
-                }
-                
-                $_POST['plant-name'] = '';
-                $_POST['plant-descriptor'] = '';
-            }
+<?php
+    
+    function populate_static_sensor_table($plant, $static_sensors) {
+        $content = "";
+        if(!empty($static_sensors)){
+        $table_content = "";
+        foreach($static_sensors as $static_sensor) {
+            $name = $static_sensor['name'];
+            $priority = $static_sensor['priority'];
+            $output_identifier = $static_sensor['output_identifier'];
+            $threshold = $static_sensor['threshold_offset'];
+            $unit_of_measurement = $static_sensor['unit_of_measurement'];
+            $type = $static_sensor['threshold_type'];
 
-            
-//            alert("$name, $description");
-            
+            $row_content = <<<EOT
+            <tr>
+                <td>$name</td>
+                <td>$priority</td>
+                <td>$output_identifier</td>
+                <td>$threshold</td>
+                <td>$unit_of_measurement</td>
+                <td>$type</td>
+            </tr>
+EOT;
+            $table_content = $table_content . $row_content;
         }
+            
+        $content = <<<EOT
+        <div class="card shadow mb-3">
+            <div class="card-header py-3">
+                <p class="text-primary m-0 font-weight-bold">Static Sensors</p>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th id="static-sensors-header-row">Name</th>
+                                <th id="static-sensors-header-row">Priority</th>
+                                <th id="static-sensors-header-row">Identifier</th>
+                                <th id="static-sensors-header-row">Threshold</th>
+                                <th id="static-sensors-header-row">UOM</th>
+                                <th id="static-sensors-header-row">Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        $table_content
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+EOT;
+        }
+        return $content;
+    }
+    
     ?>
 
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/chart.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js"></script>
     <script src="assets/js/script.min.js"></script>
 </body>

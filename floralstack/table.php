@@ -1,32 +1,6 @@
-<?php
-    function get_plants() {
-        $url = "http://localhost:8080/api/plants";
-        $response = file_get_contents($url);
-        $decoded_response = json_decode($response, true);
-        
-        $table_rows = "";
-        foreach ($decoded_response as $result_object) {
-        $owner = $result_object["owner"];
-        $environment = $result_object["environment"];
-            
-        $table_row = <<<EOT
-          <tr>
-          <td><img class="rounded-circle mr-2" width="30" height="30" src="assets/img/plant.svg">$result_object[name]</td>
-              <td>$result_object[description]</td>
-              <td>$owner[first_name] $owner[last_name]</td>
-              <td>$environment[name]</td>
-              <td>$result_object[creation_date]</td>
-          </tr>
-EOT;
-            $table_rows .= $table_row;
-        }
-        return $table_rows;
-    }
-?>
-
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
+<?php require_once('./php/utilities.php'); ?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -182,6 +156,34 @@ EOT;
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+
+
+<?php
+    function get_plants() {
+        
+        $decoded_response = getAllPlants();
+        
+        $table_rows = "";
+        foreach ($decoded_response as $result_object) {
+        $owner = $result_object["owner"];
+        $environment = $result_object["environment"];
+        $plant_url = getPlantWebPageURL($result_object["id"]);
+            
+        $table_row = <<<EOT
+          <tr>
+          <td><img class="rounded-circle mr-2" width="30" height="30" src="assets/img/plant.svg"><a href=$plant_url>$result_object[name]<a/></td>
+              <td>$result_object[description]</td>
+              <td>$owner[first_name] $owner[last_name]</td>
+              <td>$environment[name]</td>
+              <td>$result_object[creation_date]</td>
+          </tr>
+EOT;
+            $table_rows .= $table_row;
+        }
+        return $table_rows;
+    }
+?>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/chart.min.js"></script>

@@ -1,14 +1,37 @@
 <?php
+    // General Utilities
+    
     include('./php/definitions.php');
     function alert($message) {
         echo '<script>alert("' . $message . '")</script>';
     }
     
+    // Web redirections
+    
+    function getPlantWebPageURL($id) {
+        return PLANT_WEB_PAGE . "?id={$id}";
+    }
+
+    
+    // Backend invocations
+        
     function createPlant($name, $description) {
         $url = API_ROOT . PLANTS_ENDPOINT;
         $data = array('name' => $name, 'description' => $description);
         return makePostRequest($url, $data);
     }
+    
+    function getAllPlants() {
+        $url = API_ROOT . PLANTS_ENDPOINT;
+        return getRequest($url);
+    }
+    
+    function getPlant($id) {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/{$id}";
+        return getRequest($url);
+    }
+    
+    // Network layer
     
     function makePostRequest($url, $data) {
         $options = array(
@@ -27,4 +50,11 @@
         $status = $match[1];
         return $status === "200";
     }
+    
+    function getRequest($url) {
+        $response = file_get_contents($url);
+        $decoded_response = json_decode($response, true);
+        return $decoded_response;
+    }
+    
     ?>
