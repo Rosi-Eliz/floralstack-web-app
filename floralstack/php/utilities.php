@@ -30,6 +30,17 @@
         $url = API_ROOT . PLANTS_ENDPOINT . "/{$id}";
         return getRequest($url);
     }
+
+    function getAllUnattachedStaticSensors(){
+        $url = API_ROOT . SENSORS_ENDPOINT . "/static-unattached";
+        return getRequest($url);
+    }
+
+    function getAllUnattachedCalibratedSensors(){
+        $url = API_ROOT . SENSORS_ENDPOINT . "/calibrated-unattached";
+        return getRequest($url);
+    }
+
     
     // Network layer
     

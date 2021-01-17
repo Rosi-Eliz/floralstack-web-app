@@ -141,48 +141,7 @@
                         </div>
                         <div class="col">
                             <?php echo populate_static_sensor_table($plant, $static_sensors) ?>
-                            <div class="card shadow mb-3">
-                                <div class="card-header py-3">
-                                    <p class="text-primary m-0 font-weight-bold">Calibrated Sensors</p>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th id="calibbrated-sensors-header-row">Name</th>
-                                                    <th id="calibbrated-sensors-header-row">Priority</th>
-                                                    <th id="calibbrated-sensors-header-row">Identifier</th>
-                                                    <th id="calibbrated-sensors-header-row">Range</th>
-                                                    <th id="calibbrated-sensors-header-row">Threshold</th>
-                                                    <th id="calibbrated-sensors-header-row">UOM</th>
-                                                    <th id="calibbrated-sensors-header-row">Type</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>Moisture Sensor</td>
-                                                    <td>an4M12</td>
-                                                    <td>12.45-24.56</td>
-                                                    <td>20</td>
-                                                    <td>0</td>
-                                                    <td>ml/deg</td>
-                                                    <td>Upper bound</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Light Sensor</td>
-                                                    <td>di8M3</td>
-                                                    <td>0.002-0.234</td>
-                                                    <td>0.050</td>
-                                                    <td>-0.032</td>
-                                                    <td>lx/cm^2</td>
-                                                    <td>Lower bound</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
+                            <?php echo populate_calibrated_sensor_table($plant, $calibrated_sensors) ?>
                         </div>
                         <div class="col-lg-8">
                             <div class="row mb-3 d-none">
@@ -284,6 +243,62 @@ EOT;
         return $content;
     }
     
+    function populate_calibrated_sensor_table($plant, $calibrated_sensors){
+        $content = "";
+        if(!empty($calibrated_sensors)){
+        $table_content = "";
+            foreach($calibrated_sensors as $calibrated_sensor) {
+                $name = $calibrated_sensor['name'];
+                $priority = $calibrated_sensor['priority'];
+                $output_identifier = $calibrated_sensor['output_identifier'];
+                $range = "{$calibrated_sensor['min_value']} - {$calibrated_sensor['max_value']}";
+                $unit_of_measurement = $calibrated_sensor['unit_of_measurement'];
+                $type = $calibrated_sensor['threshold_type'];
+                $threshold = "{$calibrated_sensor['percentage_threshold']} %";
+                $row_content = <<<EOT
+                <tr>
+                    <td>$name</td>
+                    <td>$priority</td>
+                    <td>$output_identifier</td>
+                    <td>$range</td>
+                    <td>$unit_of_measurement</td>
+                    <td>$type</td>
+                    <td>$threshold</td>
+                </tr>
+    EOT;
+                $table_content = $table_content . $row_content;
+            }
+            
+            $content = <<<EOT
+            <div class="card shadow mb-3">
+                <div class="card-header py-3">
+                    <p class="text-primary m-0 font-weight-bold">Calibrated Sensors</p>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th id="calibrated-sensors-header-row">Name</th>
+                                    <th id="calibrated-sensors-header-row">Priority</th>
+                                    <th id="calibrated-sensors-header-row">Identifier</th>
+                                    <th id="calibrated-sensors-header-row">Range</th>
+                                    <th id="calibrated-sensors-header-row">UOM</th>
+                                    <th id="calibrated-sensors-header-row">Type</th>
+                                    <th id="calibrated-sensors-header-row">Threshold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            $table_content
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            EOT;
+        }
+        return $content;
+    }
     ?>
 
     <script src="assets/js/jquery.min.js"></script>
