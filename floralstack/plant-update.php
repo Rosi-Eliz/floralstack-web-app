@@ -6,12 +6,69 @@ $id = '';
 if(isset($_GET['id']))
     $id = $_GET['id'];
 $plant = getPlant($id);
-$owner = $plant['owner'];
-$environment = $plant['environment'];
-$calibrated_sensors = $plant['calibrated_sensors_list'];
-$static_sensors = $plant['static_sensors_list'];
+$owner = $plant['owner'] ?? null;
+$environment = $plant['environment'] ?? null;
+$calibrated_sensors = $plant['calibrated_sensors_list'] ?? null;
+$static_sensors = $plant['static_sensors_list'] ?? null;
 $static_unattached_sensors = getAllUnattachedStaticSensors();
 $calibrated_unattached_sensors = getAllUnattachedCalibratedSensors();
+$environments = getAllEnvironments() ?? null;
+$users = getAllUsers() ?? null;
+
+if(isset($_POST['update_details'])) {
+    $name = htmlspecialchars($_REQUEST['name']);
+    $description = htmlspecialchars($_REQUEST['description']);
+    $environment_id = htmlspecialchars($_REQUEST['environment']);
+    $owner_id = htmlspecialchars($_REQUEST['owner']);
+    $environment_id = $environment_id ? $environment_id : null;
+    $owner_id = $owner_id ? $owner_id : null;
+
+    $result = postUpdatePlant($id, $name, $description, $environment_id, $owner_id);
+    if ($result) {
+        alert("Successfully updated plant!");
+    } else {
+        alert("Unable to update the plant. Something went wrong!");
+    }
+}
+
+function getEnvironmentOptions($environments, $selected_environment){
+    $selected_name = $selected_environment['name'] ?? "None";
+    $selected_id = $selected_environment['id'] ?? 0;
+    $content = "<option value=\"$selected_id\" selected>$selected_name</option>";
+    if ($selected_id != 0)
+        $content = $content . "<option value=\"0\">None</option>";
+    foreach($environments as $iterated_environment)
+    {
+        $iterated_name = $iterated_environment['name'] ?? "None";
+        $iterated_id = $iterated_environment['id'] ?? 0;
+        if($iterated_id == $selected_id)
+            continue;
+        $content = $content . "<option value=\"$iterated_id\">$iterated_name</option>";
+    }
+    return $content;
+}
+
+function getUsersOptions($users, $selected_user){
+    $selected_name = "None";
+    $selected_id = $selected_user['id'] ?? 0;
+    if($selected_id != 0 )
+        $selected_name = "{$selected_user['first_name']} {$selected_user['last_name']}";
+    $content = "<option value=\"$selected_id\" selected>$selected_name</option>";
+    if ($selected_id != 0)
+        $content = $content . "<option value=\"0\">None</option>";
+    foreach($users as $iterated_user)
+    {
+        $iterated_name = "None";
+        $iterated_id = $iterated_user['id'] ?? 0;
+        if($iterated_id == $selected_id)
+            continue;
+        elseif($iterated_id != 0 )
+            $iterated_name = "{$iterated_user['first_name']} {$iterated_user['last_name']}";
+
+        $content = $content . "<option value=\"$iterated_id\">$iterated_name</option>";
+    }
+    return $content;
+}
 ?>
 
 <head>
@@ -114,34 +171,30 @@ $calibrated_unattached_sensors = getAllUnattachedCalibratedSensors();
                                 <p class="text-primary m-0 font-weight-bold">Details</p>
                             </div>
                             <div class="card-body">
-                                <form>
+                                <form method="post">
                                     <div class="form-group">
                                         <div class="form-row">
                                             <div class="col">
-                                                <div class="form-group"><label for="city"><strong>Name</strong></label><input class="form-control" type="text" placeholder="Los Angeles" name="city"></div>
-                                                <div class="form-group"><label for="city"><strong>Environment</strong></label><select class="form-control">
-                                                        <optgroup label="This is a group">
-                                                            <option value="12" selected="">This is item 1</option>
-                                                            <option value="13">This is item 2</option>
-                                                            <option value="14">This is item 3</option>
+                                                <div class="form-group"><label for="name"><strong>Name</strong></label><input class="form-control" type="text" name="name" required value="<?php echo $plant['name'] ?>"></div>
+                                                <div class="form-group"><label for="environment"><strong>Environment</strong></label><select name="environment" class="form-control">
+                                                        <optgroup label="Select an environment">
+                                                            <?php echo getEnvironmentOptions($environments, $environment); ?>
                                                         </optgroup>
                                                     </select></div>
-                                                <div class="form-group"><label for="city"><strong>Owner</strong></label><select class="form-control">
-                                                        <optgroup label="This is a group">
-                                                            <option value="12" selected="">This is item 1</option>
-                                                            <option value="13">This is item 2</option>
-                                                            <option value="14">This is item 3</option>
+                                                <div class="form-group"><label for="owner"><strong>Owner</strong></label><select name="owner" class="form-control">
+                                                        <optgroup label="Select an owner">
+                                                           <?php echo getUsersOptions($users, $owner); ?>
                                                         </optgroup>
                                                     </select></div>
                                             </div>
                                         </div>
                                         <div class="form-row">
                                             <div class="col">
-                                                <div class="form-group"><label for="city"><strong>Description</strong></label></div><textarea class="form-control" name="description" placeholder="Description"></textarea>
+                                                <div class="form-group"><label for="description"><strong>Description</strong></label></div><textarea class="form-control" name="description" ><?php echo $plant['description'] ?></textarea>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="form-group"><button class="btn btn-primary" type="submit">Update</button></div>
+                                    <div class="form-group"><button class="btn btn-primary" type="submit" name="update_details">Update</button></div>
                                 </form>
                             </div>
                         </div>

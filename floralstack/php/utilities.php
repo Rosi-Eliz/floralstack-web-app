@@ -41,8 +41,28 @@
         return getRequest($url);
     }
 
-    
-    // Network layer
+    function getAllEnvironments(){
+        $url = API_ROOT . ENVIRONMENTS_ENDPOINT;
+        return getRequest($url);
+    }
+
+    function getAllUsers(){
+        $url = API_ROOT . USERS_ENDPOINT;
+        return getRequest($url);
+    }
+
+    function postUpdatePlant($id, $name, $description, $environment_id, $owner_id){
+        $url = API_ROOT . PLANTS_ENDPOINT . "/update";
+        $data = array('id' => $id,
+            'name' => $name,
+            'description' => $description,
+            'environment_id' => $environment_id,
+            'owner_id' => $owner_id);
+     return makePostRequest($url, $data);
+    }
+
+
+// Network layer
     
     function makePostRequest($url, $data) {
         $options = array(

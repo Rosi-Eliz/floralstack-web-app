@@ -110,7 +110,7 @@
                             </div>
                             <div class="card mb-3">
                                 <div class="card-body text-center shadow" style="padding: 20px;">
-                                    <div class="mb-3"></div><button class="btn btn-primary" type="button" style="margin: -12px 16px 0px 0px;">Update</button><button class="btn btn-primary" type="button" style="margin: -12px 0px 0px 0px;">Delete</button>
+                                    <div class="mb-3"></div><button class="btn btn-primary" onClick="document.location.href='plant-update.php?id=<?php echo $plant['id' ?? ""] ?>'" type="button" style="margin: -12px 16px 0px 0px;">Update</button><button class="btn btn-primary" type="button" style="margin: -12px 0px 0px 0px;">Delete</button>
                                     <div class="btn-group" role="group"></div>
                                     <div class="btn-toolbar">
                                         <div class="btn-group" role="group"></div>
