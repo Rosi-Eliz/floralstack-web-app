@@ -69,6 +69,59 @@ function getUsersOptions($users, $selected_user){
     }
     return $content;
 }
+
+function populateStaticSensors($static_sensors, $unattached_static_sensors){
+    $content = "";
+    foreach($static_sensors as $iterated_sensor)
+    {
+        $iterated_name = $iterated_sensor['name'];
+        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+        $content = $content . "<tr>";
+        $content = $content . "<td>$iterated_name</td>";
+        $content = $content . "<td>$iterated_identifier</td>";
+        $content = $content . "<td><button class=\"btn btn-danger\" type=\"button\">Detach</button></td>";
+        $content = $content . "</tr>";
+    }
+
+    foreach($unattached_static_sensors as $iterated_sensor)
+    {
+        $iterated_name = $iterated_sensor['name'];
+        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+        $content = $content . "<tr>";
+        $content = $content . "<td>$iterated_name</td>";
+        $content = $content . "<td>$iterated_identifier</td>";
+        $content = $content . "<td><button class=\"btn btn-success\" type=\"button\">Attach</button></td>";
+        $content = $content . "</tr>";
+    }
+    return $content;
+}
+
+function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_sensors){
+    $content = "";
+    foreach($calibrated_sensors as $iterated_sensor)
+    {
+        $iterated_name = $iterated_sensor['name'];
+        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+        $content = $content . "<tr>";
+        $content = $content . "<td>$iterated_name</td>";
+        $content = $content . "<td>$iterated_identifier</td>";
+        $content = $content . "<td><button class=\"btn btn-danger\" type=\"button\">Detach</button></td>";
+        $content = $content . "</tr>";
+    }
+
+    foreach($unattached_calibrated_sensors as $iterated_sensor)
+    {
+        $iterated_name = $iterated_sensor['name'];
+        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+        $content = $content . "<tr>";
+        $content = $content . "<td>$iterated_name</td>";
+        $content = $content . "<td>$iterated_identifier</td>";
+        $content = $content . "<td><button class=\"btn btn-success\" type=\"button\">Attach</button></td>";
+        $content = $content . "</tr>";
+    }
+    return $content;
+}
+
 ?>
 
 <head>
@@ -250,21 +303,7 @@ function getUsersOptions($users, $selected_user){
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>Cell 1</td>
-                                            <td>Cell 2</td>
-                                            <td><button class="btn btn-danger" type="button">Detach</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cell 3</td>
-                                            <td>Cell 4</td>
-                                            <td><button class="btn btn-danger" type="button">Detach</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cell 3</td>
-                                            <td>Cell 4</td>
-                                            <td><button class="btn btn-success" type="button">Attach</button></td>
-                                        </tr>
+                                        <?php echo populateStaticSensors($static_sensors, $static_unattached_sensors); ?>
                                         </tbody>
                                     </table>
                                 </div>
@@ -287,21 +326,7 @@ function getUsersOptions($users, $selected_user){
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>Cell 1</td>
-                                            <td>Cell 2</td>
-                                            <td><button class="btn btn-danger" type="button">Detach</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cell 3</td>
-                                            <td>Cell 4</td>
-                                            <td><button class="btn btn-danger" type="button">Detach</button></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Cell 3</td>
-                                            <td>Cell 4</td>
-                                            <td><button class="btn btn-success" type="button">Attach</button></td>
-                                        </tr>
+                                        <?php echo populateCalibratedSensors($calibrated_sensors, $calibrated_unattached_sensors); ?>
                                         </tbody>
                                     </table>
                                 </div>
