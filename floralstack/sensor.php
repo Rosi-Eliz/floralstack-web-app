@@ -1,13 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <?php require_once('./php/utilities.php');
-    $id = $_GET['id'];
-    $plant = getPlant($id);
-    $owner = $plant['owner'];
-    $environment = $plant['environment'];
-    $calibrated_sensors = $plant['calibrated_sensors_list'];
-    $static_sensors = $plant['static_sensors_list'];
-    ?>
+$id = $_GET['id'];
+$type = $_GET['type'];
+//$referer = $_SERVER["HTTP_REFERER"];
+
+function getSensor($id, $type) {
+    switch($type)
+    {
+        case "static":
+            return getStaticSensor($id);
+
+        case "calibrated":
+            return getCalibratedSensor($id);
+
+        default:
+            return null;
+    }
+}
+$sensor = getSensor($id, $type);
+$actuators_list = $sensor['actuators'];
+
+function getDetails($sensor, $type)
+{
+    switch($type)
+    {
+        case "static":
+            return populateStaticSensor($sensor);
+
+        case "calibrated":
+            return populateCalibratedSensor($sensor);
+
+        default:
+            return "";
+    }
+}
+
+function populateCalibratedSensor($sensor)
+{
+    $name = $sensor['name'];
+    $priority = $sensor['priority'];
+    $output_identifier = $sensor['output_identifier'];
+    $unit_of_measurement = $sensor['unit_of_measurement'];
+    $last_measurement_value = $sensor['last_measurement_value'] ?? "Not Available";
+    $threshold_type = $sensor['threshold_type'];
+    $description = $sensor['description'];
+    $max_value = $sensor['max_value'];
+    $min_value = $sensor['min_value'];
+    $percentage_threshold = $sensor['percentage_threshold'];
+    $content = <<<EOT
+        <div class="col">
+                                        <div class="form-group"><label for="priority"><strong>Priority</strong></label></div>
+                                        <p>$priority</p>
+                                    </div>
+                                    <div class="col-xl-11 offset-xl-0">
+                                        <div class="form-group"><label for="identifier"><strong>Identifier</strong></label></div>
+                                        <p>$output_identifier</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="unit_of_measurement"><strong>Unit of measurement</strong></label></div>
+                                        <p>$unit_of_measurement</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="last_measurement"><strong>Last measurement</strong></label></div>
+                                        <p>$last_measurement_value</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="threshold_type"><strong>Threshold type</strong></label></div>
+                                        <p>$threshold_type</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="max_value"><strong>Max Value</strong></label></div>
+                                        <p>$max_value</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="min_value"><strong>Min Value</strong></label></div>
+                                        <p>$min_value</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="percentage_threshold"><strong>Threshold %</strong><br></label></div>
+                                        <p>$percentage_threshold</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="description"><strong>Description</strong></label></div>
+                                        <p>$description</p>
+                                    </div>
+EOT;
+    return $content;
+}
+
+function populateStaticSensor($sensor)
+{  $name = $sensor['name'];
+    $priority = $sensor['priority'];
+    $output_identifier = $sensor['output_identifier'];
+    $unit_of_measurement = $sensor['unit_of_measurement'];
+    $last_measurement_value = $sensor['last_measurement_value'] ?? "Not Available";
+    $threshold_type = $sensor['threshold_type'];
+    $description = $sensor['description'];
+    $threshold_offset = $sensor['threshold_offset'];
+    $content = <<<EOT
+        <div class="col">
+                                        <div class="form-group"><label for="priority"><strong>Priority</strong></label></div>
+                                        <p>$priority</p>
+                                    </div>
+                                    <div class="col-xl-11 offset-xl-0">
+                                        <div class="form-group"><label for="identifier"><strong>Identifier</strong></label></div>
+                                        <p>$output_identifier</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="unit_of_measurement"><strong>Unit of measurement</strong></label></div>
+                                        <p>$unit_of_measurement</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="last_measurement"><strong>Last measurement</strong></label></div>
+                                        <p>$last_measurement_value</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="threshold_type"><strong>Threshold type</strong></label></div>
+                                        <p>$threshold_type</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="threshold_offset"><strong>Threshold offset</strong></label></div>
+                                        <p>$threshold_offset</p>
+                                    </div>
+                                    <div class="col">
+                                        <div class="form-group"><label for="description"><strong>Description</strong></label></div>
+                                        <p>$description</p>
+                                    </div>
+EOT;
+    return $content;
+}
+
+    function populateActuators($actuators_list)
+    {
+        $content = "";
+        if(empty($actuators_list))
+        {
+            return $content;
+        }
+        foreach($actuators_list as $actuator)
+        {
+            $name = $actuator['name'];
+            $identifier = $actuator['input_identifier'];
+            $priority = $actuator['priority'];
+            $actuator_content = <<<EOT
+            <tr>
+              <td>$name</td>
+              <td>$identifier</td>
+              <td>$priority</td>
+            </tr>
+EOT;
+        $content = $content . $actuator_content;
+        }
+        return $content;
+    }
+
+if(isset($_POST['delete'])) {
+    $result = deleteSensor($id);
+    if ($result) {
+        header("Location: ". HOME_WEB_PAGE);
+        exit;
+    } else {
+        alert("Unable to delete the sensor. Something went wrong!");
+    }
+}
+
+?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -100,48 +258,47 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><?php echo $plant['name'] ?></h3>
+                    <h3 class="text-dark mb-4">Sensor Name</h3>
                     <div class="row mb-3">
-                        <div class="col-lg-4 col-xl-4 offset-xl-0">
-                            <div class="card mb-3">
-                                <div class="card-body text-center shadow"><img class="rounded-circle mb-3 mt-4" src="assets/img/plant.svg" width="160" height="160">
-                                    <div class="mb-3"></div>
-                                </div>
-                            </div>
-                            <div class="card mb-3">
-                                <div class="card-body text-center shadow" style="padding: 20px;">
-                                    <div class="mb-3"></div><button class="btn btn-primary" onClick="document.location.href='plant-update.php?id=<?php echo $plant['id' ?? ""] ?>'" type="button" style="margin: -12px 16px 0px 0px;">Update</button><button class="btn btn-primary" data-toggle="modal" data-target="#deleteModal" type="button" style="margin: -12px 0px 0px 0px;">Delete</button>
-                                    <div class="btn-group" role="group"></div>
-                                    <div class="btn-toolbar">
-                                        <div class="btn-group" role="group"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         <div class="col" id="details-column">
                             <div class="card shadow mb-4">
                                 <div class="card-header py-3">
                                     <h6 class="text-primary font-weight-bold m-0">Details</h6>
                                 </div>
                                 <div class="card-body">
-                                    <div class="col">
-                                        <div class="form-group"><label for="owner_name"><strong>Owner</strong></label></div>
-                                        <p><?php echo "${owner['first_name']} {$owner['last_name']}" ?></p>
-                                    </div>
-                                    <div class="col">
-                                        <div class="form-group"><label for="environment"><strong>Environment</strong></label></div>
-                                        <p><?php echo $environment['name'] ?></p>
-                                    </div>
-                                    <div class="col">
-                                        <div class="form-group"><label for="description"><strong>Description</strong></label></div>
-                                        <p><?php echo $plant['description'] ?></p>
+                                  <?php echo getDetails($sensor, $type); ?>
+                                </div>
+                            </div>
+                            <div class="card shadow mb-3" <?php
+                            if(empty($actuators_list)) {
+                                echo "hidden";
+                            }
+                            ?>>
+                                <div class="card-header py-3">
+                                    <p class="text-primary m-0 font-weight-bold">Actuators</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th id="actuators-header-row">Name</th>
+                                                    <th id="actuators-header-row">Identifier</th>
+                                                    <th id="actuators-header-row">Priority</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php echo populateActuators($actuators_list); ?>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col">
-                            <?php echo populate_static_sensor_table($plant, $static_sensors) ?>
-                            <?php echo populate_calibrated_sensor_table($plant, $calibrated_sensors) ?>
+                            <div class="card mb-3">
+                                <div class="card-body text-center shadow" style="padding: 20px;">
+                                    <div class="text-left mb-3"><button class="btn btn-primary" type="button" style="margin: 12px 18px 0px 0px;">Update</button><button class="btn btn-primary" type="button" data-toggle="modal" data-target="#deleteModal" style="margin: 10px 0px 0px 0px;">Delete</button></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="col-lg-8">
                             <div class="row mb-3 d-none">
@@ -195,7 +352,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this plant?
+                    Are you sure you want to delete this sensor?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
@@ -206,137 +363,6 @@
             </div>
         </div>
     </div>
-<?php
-    
-    function populate_static_sensor_table($plant, $static_sensors) {
-        $content = "";
-        if(!empty($static_sensors)){
-        $table_content = "";
-        foreach($static_sensors as $static_sensor) {
-            $name = $static_sensor['name'];
-            $priority = $static_sensor['priority'];
-            $output_identifier = $static_sensor['output_identifier'];
-            $threshold = $static_sensor['threshold_offset'];
-            $unit_of_measurement = $static_sensor['unit_of_measurement'];
-            $type = $static_sensor['threshold_type'];
-
-            $sensor_url = getSensorWebPageURL($static_sensor['id'], "static");
-            $row_content = <<<EOT
-            <tr>
-                <td><a href="$sensor_url">$name</td>
-                <td>$priority</td>
-                <td>$output_identifier</td>
-                <td>$threshold</td>
-                <td>$unit_of_measurement</td>
-                <td>$type</td>
-            </tr>
-EOT;
-            $table_content = $table_content . $row_content;
-        }
-            
-        $content = <<<EOT
-        <div class="card shadow mb-3">
-            <div class="card-header py-3">
-                <p class="text-primary m-0 font-weight-bold">Static Sensors</p>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th id="static-sensors-header-row">Name</th>
-                                <th id="static-sensors-header-row">Priority</th>
-                                <th id="static-sensors-header-row">Identifier</th>
-                                <th id="static-sensors-header-row">Threshold</th>
-                                <th id="static-sensors-header-row">UOM</th>
-                                <th id="static-sensors-header-row">Type</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        $table_content
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-EOT;
-        }
-        return $content;
-    }
-    
-    function populate_calibrated_sensor_table($plant, $calibrated_sensors){
-        $content = "";
-        if(!empty($calibrated_sensors)){
-        $table_content = "";
-            foreach($calibrated_sensors as $calibrated_sensor) {
-                $name = $calibrated_sensor['name'];
-                $priority = $calibrated_sensor['priority'];
-                $output_identifier = $calibrated_sensor['output_identifier'];
-                $range = "{$calibrated_sensor['min_value']} - {$calibrated_sensor['max_value']}";
-                $unit_of_measurement = $calibrated_sensor['unit_of_measurement'];
-                $type = $calibrated_sensor['threshold_type'];
-                $threshold = "{$calibrated_sensor['percentage_threshold']} %";
-                $sensor_url = getSensorWebPageURL($calibrated_sensor['id'], "calibrated");
-                $row_content = <<<EOT
-                <tr>
-                    <td><a href="{$sensor_url}">$name</td>
-                    <td>$priority</td>
-                    <td>$output_identifier</td>
-                    <td>$range</td>
-                    <td>$unit_of_measurement</td>
-                    <td>$type</td>
-                    <td>$threshold</td>
-                </tr>
-    EOT;
-                $table_content = $table_content . $row_content;
-            }
-            
-            $content = <<<EOT
-            <div class="card shadow mb-3">
-                <div class="card-header py-3">
-                    <p class="text-primary m-0 font-weight-bold">Calibrated Sensors</p>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th id="calibrated-sensors-header-row">Name</th>
-                                    <th id="calibrated-sensors-header-row">Priority</th>
-                                    <th id="calibrated-sensors-header-row">Identifier</th>
-                                    <th id="calibrated-sensors-header-row">Range</th>
-                                    <th id="calibrated-sensors-header-row">UOM</th>
-                                    <th id="calibrated-sensors-header-row">Type</th>
-                                    <th id="calibrated-sensors-header-row">Threshold</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            $table_content
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            EOT;
-        }
-        return $content;
-    }
-
-    if(isset($_POST['delete'])) {
-        header("Location: /plants.php");
-
-        exit;
-
-//        $result = deletePlant($id);
-//         if ($result) {
-//            header("Location: ". HOME_WEB_PAGE);
-//            exit;
-//         } else {
-//            alert("Unable to delete the plant. Something went wrong!");
-//        }
-    }
-    ?>
-
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/chart.min.js"></script>

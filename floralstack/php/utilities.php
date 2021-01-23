@@ -12,7 +12,10 @@
         return PLANT_WEB_PAGE . "?id={$id}";
     }
 
-    
+    function getSensorWebPageURL($id, $type){
+        return SENSOR_WEB_PAGE . "?id={$id}" . "&type={$type}";
+    }
+
     // Backend invocations
         
     function createPlant($name, $description) {
@@ -61,6 +64,25 @@
      return makePostRequest($url, $data);
     }
 
+    function deletePlant($id) {
+        $url = API_ROOT . DELETE_PLANTS_ENDPOINT . "/{$id}";
+        return makeDeleteRequest($url);
+    }
+
+    function getCalibratedSensor($id) {
+        $url = API_ROOT . CALIBRATED_SENSORS_ENDPOINT . "/{$id}";
+        return getRequest($url);
+    }
+
+    function getStaticSensor($id) {
+      $url = API_ROOT . STATIC_SENSORS_ENDPOINT . "/{$id}";
+     return getRequest($url);
+    }
+
+    function deleteSensor($id) {
+        $url = API_ROOT . DELETE_SENSORS_ENDPOINT . "/{$id}";
+        return makeDeleteRequest($url);
+    }
 
 // Network layer
     
@@ -87,5 +109,21 @@
         $decoded_response = json_decode($response, true);
         return $decoded_response;
     }
-    
+
+function makeDeleteRequest($url) {
+    $options = array(
+        'http' => array(
+            'method'  => 'POST',
+        )
+    );
+    $context  = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+
+    $status_line = $http_response_header[0];
+
+    preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $match);
+    $status = $match[1];
+    return $status === "200";
+}
+
     ?>
