@@ -1,51 +1,6 @@
 <!DOCTYPE html>
 <html>
-<?php
-    require_once('./php/utilities.php');
-    $environments = getAllEnvironments();
-    $users = getAllUsers();
 
-    function populateEnvironments($environments){
-        $content = "";
-        foreach($environments as $environment) {
-            $name = $environment['name'];
-            $description = $environment['description'];
-            $url = getEnvironmentWebPageURL($environment['id']);
-            $environment_record = <<<EOT
-            
-             <tr>
-             <td><a href="$url">$name</td>
-             <td>$description</td>                         
-             </tr>
-EOT;
-            $content = $content . $environment_record;
-        }
-        return $content;
-    }
-
-
-function populateUsers($users){
-    $content = "";
-    foreach($users as $user) {
-        $name = "{$user['first_name']} {$user['last_name']}" ;
-        $email = $user['email'];
-        $role = $user['user_role'];
-        $birthday = $user['birth_date'];
-        $url = getUserWebPageURL($user['id']);
-        $user_record = <<<EOT
-             <tr>
-             <td><a href="$url">$name</td>
-             <td>$email</td>       
-             <td>$role</td>       
-             <td>$birthday</td>                         
-             </tr>
-EOT;
-        $content = $content . $user_record;
-    }
-    return $content;
-}
-
-?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -123,19 +78,13 @@ EOT;
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Entities</h3>
+                    <h3 class="text-dark mb-4">Dashboard</h3>
                     <div class="col" style="margin-bottom: 34px;">
-                        <div class="card shadow"
-                            <?php
-                            if(empty($users)) {
-                                echo "hidden";
-                            }
-                            ?>
-                        >
+                        <div class="card shadow">
                             <div class="card-header py-3">
                                 <div class="row">
                                     <div class="col">
-                                        <p class="text-left text-primary d-xl-flex mb-auto align-items-xl-center m-0 font-weight-bold" style="color: var(--blue);filter: hue-rotate(0deg) saturate(0%);margin: 3px 0px 0px 0px;margin-top: -11px;">Users</p>
+                                        <p class="text-left text-primary d-xl-flex mb-auto align-items-xl-center m-0 font-weight-bold" style="color: var(--blue);filter: hue-rotate(0deg) saturate(0%);margin: 3px 0px 0px 0px;margin-top: -11px;">Overview</p>
                                     </div>
                                 </div>
                             </div>
@@ -144,46 +93,16 @@ EOT;
                                     <table class="table my-0" id="dataTable">
                                         <thead id="header-1">
                                             <tr>
-                                                <th id="owner_plants_column">Name</th>
-                                                <th id="owner_plants_column">Email</th>
-                                                <th id="owner_plants_column">Role</th>
-                                                <th id="owner_plants_column">Birthday</th>
+                                                <th id="environments_column">Entity</th>
+                                                <th id="environments_column">Records</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                           <?php echo populateUsers($users);?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow"
-                            <?php
-                            if(empty($environments)) {
-                                echo "hidden";
-                            }
-                            ?>
-                        >
-                            <div class="card-header py-3">
-                                <div class="row">
-                                    <div class="col">
-                                        <p class="text-left text-primary d-xl-flex mb-auto align-items-xl-center m-0 font-weight-bold" style="color: var(--blue);filter: hue-rotate(0deg) saturate(0%);margin: 3px 0px 0px 0px;margin-top: -11px;">Environments</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive table mt-2" id="dataTable-2" role="grid" aria-describedby="dataTable_info">
-                                    <table class="table my-0" id="dataTable">
-                                        <thead id="header-2">
                                             <tr>
-                                                <th id="environments_column">Name</th>
-                                                <th id="environments_column">Description</th>
+                                                <td>Airi Satou</td>
+                                                <td>Accountant</td>
                                             </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?php echo populateEnvironments($environments); ?>
+                                            <tr></tr>
                                         </tbody>
                                     </table>
                                 </div>

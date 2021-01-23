@@ -2,50 +2,38 @@
 <html>
 <?php
     require_once('./php/utilities.php');
-    $environments = getAllEnvironments();
-    $users = getAllUsers();
+    $id = $_GET['id'];
+    $environment = getEnvironment($id);
+    $name = $environment['name'];
+    $description = $environment['description'];
 
-    function populateEnvironments($environments){
-        $content = "";
-        foreach($environments as $environment) {
-            $name = $environment['name'];
-            $description = $environment['description'];
-            $url = getEnvironmentWebPageURL($environment['id']);
-            $environment_record = <<<EOT
-            
-             <tr>
-             <td><a href="$url">$name</td>
-             <td>$description</td>                         
-             </tr>
+    $plants = getAllPlantsForEnvironment($id);
+
+    function populatePlants($plants){
+         $table_rows = "";
+        foreach ($plants as $result_object) {
+        $plant_name = $result_object['name'];
+        $plant_url = getPlantWebPageURL($result_object["id"]);
+        $owner = $result_object["owner"];
+        $owner_url = getUserWebPageURL($owner['id']);
+        $owner_name = $owner ? "{$owner['first_name']} {$owner['last_name']}" : "Not Assigned";
+        $creation_date = $result_object['creation_date'];
+        $descriptionText = $result_object['description'] ?? "Not Assigned";
+
+        $table_row = <<<EOT
+          <tr>
+          <td><img class="rounded-circle mr-2" width="30" height="30" src="assets/img/plant.svg"><a href="$plant_url">$plant_name</td>
+          <td>$descriptionText</td>
+          <td><a href="$owner_url">$owner_name</td>
+          <td>$creation_date</td>
+          </tr>
 EOT;
-            $content = $content . $environment_record;
+            $table_rows .= $table_row;
         }
-        return $content;
+        return $table_rows;
     }
 
-
-function populateUsers($users){
-    $content = "";
-    foreach($users as $user) {
-        $name = "{$user['first_name']} {$user['last_name']}" ;
-        $email = $user['email'];
-        $role = $user['user_role'];
-        $birthday = $user['birth_date'];
-        $url = getUserWebPageURL($user['id']);
-        $user_record = <<<EOT
-             <tr>
-             <td><a href="$url">$name</td>
-             <td>$email</td>       
-             <td>$role</td>       
-             <td>$birthday</td>                         
-             </tr>
-EOT;
-        $content = $content . $user_record;
-    }
-    return $content;
-}
-
-?>
+    ?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -123,19 +111,27 @@ EOT;
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4">Entities</h3>
-                    <div class="col" style="margin-bottom: 34px;">
-                        <div class="card shadow"
-                            <?php
-                            if(empty($users)) {
-                                echo "hidden";
-                            }
-                            ?>
-                        >
+                    <h3 class="text-dark mb-4"><?php echo $name; ?></h3>
+                    <div class="col" style="margin-bottom: 0px;">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="text-primary font-weight-bold m-0">Details</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="col">
+                                    <div class="form-group"><label for="description"><strong>Description</strong></label></div>
+                                    <p><?php echo $description; ?></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card shadow"></div>
+                    </div>
+                    <div class="col">
+                        <div class="card shadow">
                             <div class="card-header py-3">
                                 <div class="row">
                                     <div class="col">
-                                        <p class="text-left text-primary d-xl-flex mb-auto align-items-xl-center m-0 font-weight-bold" style="color: var(--blue);filter: hue-rotate(0deg) saturate(0%);margin: 3px 0px 0px 0px;margin-top: -11px;">Users</p>
+                                        <p class="text-left text-primary d-xl-flex mb-auto align-items-xl-center m-0 font-weight-bold" style="color: var(--blue);filter: hue-rotate(0deg) saturate(0%);margin: 3px 0px 0px 0px;margin-top: -11px;">Owned Plants</p>
                                     </div>
                                 </div>
                             </div>
@@ -145,45 +141,13 @@ EOT;
                                         <thead id="header-1">
                                             <tr>
                                                 <th id="owner_plants_column">Name</th>
-                                                <th id="owner_plants_column">Email</th>
-                                                <th id="owner_plants_column">Role</th>
-                                                <th id="owner_plants_column">Birthday</th>
+                                                <th id="owner_plants_column">Description</th>
+                                                <th id="owner_plants_column">Owner</th>
+                                                <th id="owner_plants_column">Creation Date</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                           <?php echo populateUsers($users);?>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="card shadow"
-                            <?php
-                            if(empty($environments)) {
-                                echo "hidden";
-                            }
-                            ?>
-                        >
-                            <div class="card-header py-3">
-                                <div class="row">
-                                    <div class="col">
-                                        <p class="text-left text-primary d-xl-flex mb-auto align-items-xl-center m-0 font-weight-bold" style="color: var(--blue);filter: hue-rotate(0deg) saturate(0%);margin: 3px 0px 0px 0px;margin-top: -11px;">Environments</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive table mt-2" id="dataTable-2" role="grid" aria-describedby="dataTable_info">
-                                    <table class="table my-0" id="dataTable">
-                                        <thead id="header-2">
-                                            <tr>
-                                                <th id="environments_column">Name</th>
-                                                <th id="environments_column">Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                        <?php echo populateEnvironments($environments); ?>
+                                            <?php echo populatePlants($plants); ?>
                                         </tbody>
                                     </table>
                                 </div>
