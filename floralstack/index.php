@@ -1,6 +1,48 @@
 <!DOCTYPE html>
 <html>
+<?php
+    require_once('./php/utilities.php');
+    require_once('./php/DatabaseHelper.php');
 
+    function populateTable()
+    {
+        $database = new DatabaseHelper();
+        $plants_count = $database->getAllPlants();
+        $users_count = $database->getAllUsers();
+        $environments_count = $database->getAllEnvironments();
+        $static_sensors_count = $database->getAllStaticSensors();
+        $calibrated_sensors_count = $database->getAllCalibratedSensors();
+        $actuators_count = $database->getAllActuators();
+
+        $content = <<<EOT
+        <tr>
+        <td>Plants</td>
+        <td>$plants_count</td>
+        </tr>
+        <tr>
+        <td>Users</td>
+        <td>$users_count</td>
+        </tr>
+        <tr>
+        <td>Environments</td>
+        <td>$environments_count</td>
+        </tr>
+        <tr>
+        <td>Static sensors</td>
+        <td>$static_sensors_count</td>
+        </tr>
+        <tr>
+        <td>Calibrated sensors</td>
+        <td>$calibrated_sensors_count</td>
+        </tr>
+        <tr>
+        <td>Actuators</td>
+        <td>$actuators_count</td>
+        </tr>
+EOT;
+        return $content;
+    }
+    ?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -98,11 +140,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>Airi Satou</td>
-                                                <td>Accountant</td>
-                                            </tr>
-                                            <tr></tr>
+                                        <?php echo populateTable(); ?>
                                         </tbody>
                                     </table>
                                 </div>
