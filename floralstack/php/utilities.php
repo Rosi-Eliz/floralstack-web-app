@@ -16,6 +16,14 @@
         return SENSOR_WEB_PAGE . "?id={$id}" . "&type={$type}";
     }
 
+    function getUserWebPageURL($id) {
+        return USER_WEB_PAGE . "?id={$id}";
+    }
+
+    function getEnvironmentWebPageURL($id) {
+        return ENVIRONMENT_WEB_PAGE . "?id={$id}";
+    }
+
     // Backend invocations
         
     function createPlant($name, $description, $environment, $owner) {
@@ -31,9 +39,29 @@
         $url = API_ROOT . PLANTS_ENDPOINT;
         return getRequest($url);
     }
-    
+
+    function getAllPlantsForEnvironment($id) {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/environment" . "/{$id}";
+        return getRequest($url);
+    }
+
+    function getAllPlantsForOwner($id) {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/owner" . "/{$id}";
+        return getRequest($url);
+    }
+
     function getPlant($id) {
         $url = API_ROOT . PLANTS_ENDPOINT . "/{$id}";
+        return getRequest($url);
+    }
+
+    function getUser($id) {
+        $url = API_ROOT . USERS_ENDPOINT . "/{$id}";
+        return getRequest($url);
+    }
+
+    function getEnvironment($id) {
+        $url = API_ROOT . ENVIRONMENTS_ENDPOINT . "/{$id}";
         return getRequest($url);
     }
 

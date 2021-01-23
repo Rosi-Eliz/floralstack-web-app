@@ -13,5 +13,7 @@
     define("HOME_WEB_PAGE", WEB_ROOT . "/plants.php");
     define("PLANT_WEB_PAGE", WEB_ROOT . "/plant.php");
     define("SENSOR_WEB_PAGE", WEB_ROOT . "/sensor.php");
+    define("USER_WEB_PAGE", WEB_ROOT . "/user.php");
+    define("ENVIRONMENT_WEB_PAGE", WEB_ROOT . "/environment.php");
     define("PLANT_UPDATE_WEB_PAGE", WEB_ROOT . "/plant-update.php");
     ?>
