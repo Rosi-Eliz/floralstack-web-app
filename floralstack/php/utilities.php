@@ -12,7 +12,10 @@
         return PLANT_WEB_PAGE . "?id={$id}";
     }
 
-    
+    function getSensorWebPageURL($id, $type){
+        return SENSOR_WEB_PAGE . "?id={$id}" . "&type={$type}";
+    }
+
     // Backend invocations
         
     function createPlant($name, $description) {
@@ -30,8 +33,58 @@
         $url = API_ROOT . PLANTS_ENDPOINT . "/{$id}";
         return getRequest($url);
     }
-    
-    // Network layer
+
+    function getAllUnattachedStaticSensors(){
+        $url = API_ROOT . SENSORS_ENDPOINT . "/static-unattached";
+        return getRequest($url);
+    }
+
+    function getAllUnattachedCalibratedSensors(){
+        $url = API_ROOT . SENSORS_ENDPOINT . "/calibrated-unattached";
+        return getRequest($url);
+    }
+
+    function getAllEnvironments(){
+        $url = API_ROOT . ENVIRONMENTS_ENDPOINT;
+        return getRequest($url);
+    }
+
+    function getAllUsers(){
+        $url = API_ROOT . USERS_ENDPOINT;
+        return getRequest($url);
+    }
+
+    function postUpdatePlant($id, $name, $description, $environment_id, $owner_id){
+        $url = API_ROOT . PLANTS_ENDPOINT . "/update";
+        $data = array('id' => $id,
+            'name' => $name,
+            'description' => $description,
+            'environment_id' => $environment_id,
+            'owner_id' => $owner_id);
+     return makePostRequest($url, $data);
+    }
+
+    function deletePlant($id) {
+        $url = API_ROOT . DELETE_PLANTS_ENDPOINT . "/{$id}";
+        return makeDeleteRequest($url);
+    }
+
+    function getCalibratedSensor($id) {
+        $url = API_ROOT . CALIBRATED_SENSORS_ENDPOINT . "/{$id}";
+        return getRequest($url);
+    }
+
+    function getStaticSensor($id) {
+      $url = API_ROOT . STATIC_SENSORS_ENDPOINT . "/{$id}";
+     return getRequest($url);
+    }
+
+    function deleteSensor($id) {
+        $url = API_ROOT . DELETE_SENSORS_ENDPOINT . "/{$id}";
+        return makeDeleteRequest($url);
+    }
+
+// Network layer
     
     function makePostRequest($url, $data) {
         $options = array(
@@ -56,5 +109,21 @@
         $decoded_response = json_decode($response, true);
         return $decoded_response;
     }
-    
+
+function makeDeleteRequest($url) {
+    $options = array(
+        'http' => array(
+            'method'  => 'POST',
+        )
+    );
+    $context  = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+
+    $status_line = $http_response_header[0];
+
+    preg_match('{HTTP\/\S*\s(\d{3})}', $status_line, $match);
+    $status = $match[1];
+    return $status === "200";
+}
+
     ?>
