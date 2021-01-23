@@ -2,8 +2,21 @@
 <html>
 <?php
     require_once('./php/utilities.php');
-    $environments = getAllEnvironments();
+    require_once('./php/DatabaseHelper.php');
+    $database = new DatabaseHelper();
     $users = getAllUsers();
+
+    if(isset($_POST['create_environment_modal'])) {
+        $name = htmlspecialchars($_REQUEST['name']);
+        $description = htmlspecialchars($_REQUEST['description']);
+        $result = $database->createEnvironment($name, $description);
+        if($result != 0) {
+            header("Refresh:0");
+        } else {
+            alert("Unable to create the environment. Something went wrong!");
+        }
+    }
+    $environments = getAllEnvironments();
 
     function populateEnvironments($environments){
         $content = "";
@@ -173,6 +186,9 @@ EOT;
                                     </div>
                                 </div>
                             </div>
+                            <div>
+                                <div class="col"><button class="btn btn-primary" type="submit" data-toggle="modal" data-target="#create_environment_form" style="margin-top: 16px; margin-left: 8px;">Create</button></div>
+                            </div>
                             <div class="card-body">
                                 <div class="table-responsive table mt-2" id="dataTable-2" role="grid" aria-describedby="dataTable_info">
                                     <table class="table my-0" id="dataTable">
@@ -199,6 +215,35 @@ EOT;
             </footer>
         </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a>
     </div>
+
+    <div class="modal fade" id="create_environment_form" tabindex="-1" role="dialog" aria-labelledby="createEnvironmentlLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createModalLabel">Environment Creation</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="create_environment" method="post" action="">
+                        <div class="form-group">
+                            <label for="name" class="col-form-label">Name:</label>
+                            <input type="text" placeholder="Enter a name" class="form-control" name="name" required>
+
+                            <label for="description" class="col-form-label">Description:</label>
+                            <textarea class="form-control" placeholder="Enter a description (Optional)" name="description" id="description"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" form="create_environment" class="btn btn-primary" name="create_environment_modal">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/chart.min.js"></script>
