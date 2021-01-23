@@ -4,10 +4,13 @@
     $id = $_GET['id'];
     $plant = getPlant($id);
     $owner = $plant['owner'];
+    $owner_name = $owner ? "{$owner['first_name']} . {$onwer['last_name']}" : "Not assigned";
     $environment = $plant['environment'];
+    $environment_name = $environment ? $environment['name'] : "Not assigned";
     $calibrated_sensors = $plant['calibrated_sensors_list'];
     $static_sensors = $plant['static_sensors_list'];
-    ?>
+    $description = $plant ? $plant['description'] : "No description";
+?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -31,9 +34,9 @@
                 </a>
                 <hr class="sidebar-divider my-0">
                 <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                    <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="entities.html"><i class="fas fa-user"></i><span>Entities</span></a></li>
-                    <li class="nav-item"><a class="nav-link" href="table.html"><i class="fas fa-table"></i><span>Plants</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="entities.php"><i class="fas fa-user"></i><span>Entities</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="plants.php"><i class="fas fa-table"></i><span>Plants</span></a></li>
                     <li class="nav-item"></li>
                     <li class="nav-item"></li>
                 </ul>
@@ -100,7 +103,7 @@
                     </div>
                 </nav>
                 <div class="container-fluid">
-                    <h3 class="text-dark mb-4"><?php echo $plant['name'] ?></h3>
+                    <h3 class="text-dark mb-4"><?php echo $plant['name'];?></h3>
                     <div class="row mb-3">
                         <div class="col-lg-4 col-xl-4 offset-xl-0">
                             <div class="card mb-3">
@@ -110,7 +113,7 @@
                             </div>
                             <div class="card mb-3">
                                 <div class="card-body text-center shadow" style="padding: 20px;">
-                                    <div class="mb-3"></div><button class="btn btn-primary" onClick="document.location.href='plant-update.php?id=<?php echo $plant['id' ?? ""] ?>'" type="button" style="margin: -12px 16px 0px 0px;">Update</button><button class="btn btn-primary" data-toggle="modal" data-target="#deleteModal" type="button" style="margin: -12px 0px 0px 0px;">Delete</button>
+                                    <div class="mb-3"></div><button class="btn btn-primary" onClick="document.location.href='plant-update.php?id=<?php echo $plant['id' ?? ""];?>'" type="button" style="margin: -12px 16px 0px 0px;">Update</button><button class="btn btn-primary" data-toggle="modal" data-target="#deleteModal" type="button" style="margin: -12px 0px 0px 0px;">Delete</button>
                                     <div class="btn-group" role="group"></div>
                                     <div class="btn-toolbar">
                                         <div class="btn-group" role="group"></div>
@@ -126,22 +129,22 @@
                                 <div class="card-body">
                                     <div class="col">
                                         <div class="form-group"><label for="owner_name"><strong>Owner</strong></label></div>
-                                        <p><?php echo "${owner['first_name']} {$owner['last_name']}" ?></p>
+                                        <p><?php echo $owner_name;?></p>
                                     </div>
                                     <div class="col">
                                         <div class="form-group"><label for="environment"><strong>Environment</strong></label></div>
-                                        <p><?php echo $environment['name'] ?></p>
+                                        <p><?php echo $environment_name;?></p>
                                     </div>
                                     <div class="col">
                                         <div class="form-group"><label for="description"><strong>Description</strong></label></div>
-                                        <p><?php echo $plant['description'] ?></p>
+                                        <p><?php echo $description;?></p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col">
-                            <?php echo populate_static_sensor_table($plant, $static_sensors) ?>
-                            <?php echo populate_calibrated_sensor_table($plant, $calibrated_sensors) ?>
+                            <?php echo populate_static_sensor_table($plant, $static_sensors);?>
+                            <?php echo populate_calibrated_sensor_table($plant, $calibrated_sensors);?>
                         </div>
                         <div class="col-lg-8">
                             <div class="row mb-3 d-none">
@@ -200,7 +203,8 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
                     <form method="post">
-                        <button type="submit" class="btn btn-danger" name="delete" >Delete</button>
+                        <button type="submit" onclick="window.location.href='plants.php';"
+                                class="btn btn-danger" name="delete" >Delete</button>
                     </form>
                 </div>
             </div>
@@ -322,20 +326,16 @@ EOT;
         return $content;
     }
 
-    if(isset($_POST['delete'])) {
-        header("Location: /plants.php");
-
+if(isset($_POST['delete'])) {
+    $result = deletePlant($id);
+    if ($result) {
+        echo("<script>location.href = '".HOME_WEB_PAGE."';</script>");
         exit;
-
-//        $result = deletePlant($id);
-//         if ($result) {
-//            header("Location: ". HOME_WEB_PAGE);
-//            exit;
-//         } else {
-//            alert("Unable to delete the plant. Something went wrong!");
-//        }
+    } else {
+        alert("Unable to delete the plant. Something went wrong!");
     }
-    ?>
+}
+?>
 
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
