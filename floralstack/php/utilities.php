@@ -18,9 +18,12 @@
 
     // Backend invocations
         
-    function createPlant($name, $description) {
+    function createPlant($name, $description, $environment, $owner) {
         $url = API_ROOT . PLANTS_ENDPOINT;
-        $data = array('name' => $name, 'description' => $description);
+        $data = array('name' => $name,
+            'description' => $description,
+            'environment_id' => $environment,
+            'owner_id' => $owner);
         return makePostRequest($url, $data);
     }
     
@@ -62,6 +65,34 @@
             'environment_id' => $environment_id,
             'owner_id' => $owner_id);
      return makePostRequest($url, $data);
+    }
+
+    function attachStaticSensor($plant_id, $sensor_id)
+    {
+     $url = API_ROOT . PLANTS_ENDPOINT . "/{$plant_id}/attach_static_sensor";
+     $data = array('id' => $sensor_id);
+     return makePostRequest($url, $data);
+    }
+
+    function attachCalibratedSensor($plant_id, $sensor_id)
+    {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/{$plant_id}/attach_calibrated_sensor";
+        $data = array('id' => $sensor_id);
+        return makePostRequest($url, $data);
+    }
+
+    function detachStaticSensor($plant_id, $sensor_id)
+    {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/{$plant_id}/detach_static_sensor";
+        $data = array('id' => $sensor_id);
+        return makePostRequest($url, $data);
+    }
+
+    function detachCalibratedSensor($plant_id, $sensor_id)
+    {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/{$plant_id}/detach_calibrated_sensor";
+        $data = array('id' => $sensor_id);
+        return makePostRequest($url, $data);
     }
 
     function deletePlant($id) {

@@ -31,6 +31,46 @@ if(isset($_POST['update_details'])) {
     }
 }
 
+if(isset($_POST['attach_static_sensor'])) {
+    $sensor_id = $_POST['attach_static_sensor'];
+    $result = attachStaticSensor($id, $sensor_id);
+    if ($result) {
+        header("Refresh:0");
+    } else {
+        alert("Unable to update the plant. Something went wrong!");
+    }
+}
+
+if(isset($_POST['attach_calibrated_sensor'])) {
+    $sensor_id = $_POST['attach_calibrated_sensor'];
+    $result = attachCalibratedSensor($id, $sensor_id);
+    if ($result) {
+        header("Refresh:0");
+    } else {
+        alert("Unable to update the plant. Something went wrong!");
+    }
+}
+
+if(isset($_POST['detach_static_sensor'])) {
+    $sensor_id = $_POST['detach_static_sensor'];
+    $result = detachStaticSensor($id, $sensor_id);
+    if ($result) {
+        header("Refresh:0");
+    } else {
+        alert("Unable to update the plant. Something went wrong!");
+    }
+}
+
+if(isset($_POST['detach_calibrated_sensor'])) {
+    $sensor_id = $_POST['detach_calibrated_sensor'];
+    $result = detachCalibratedSensor($id, $sensor_id);
+    if ($result) {
+        header("Refresh:0");
+    } else {
+        alert("Unable to update the plant. Something went wrong!");
+    }
+}
+
 function getEnvironmentOptions($environments, $selected_environment){
     $selected_name = $selected_environment['name'] ?? "None";
     $selected_id = $selected_environment['id'] ?? 0;
@@ -72,52 +112,58 @@ function getUsersOptions($users, $selected_user){
 
 function populateStaticSensors($static_sensors, $unattached_static_sensors){
     $content = "";
-    foreach($static_sensors as $iterated_sensor)
-    {
-        $iterated_name = $iterated_sensor['name'];
-        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
-        $content = $content . "<tr>";
-        $content = $content . "<td>$iterated_name</td>";
-        $content = $content . "<td>$iterated_identifier</td>";
-        $content = $content . "<td><button class=\"btn btn-danger\" type=\"button\">Detach</button></td>";
-        $content = $content . "</tr>";
+    if(!empty($static_sensors)) {
+        foreach ($static_sensors as $iterated_sensor) {
+            $iterated_name = $iterated_sensor['name'];
+            $iterated_id = $iterated_sensor['id'];
+            $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+            $content = $content . "<tr>";
+            $content = $content . "<td>$iterated_name</td>";
+            $content = $content . "<td>$iterated_identifier</td>";
+            $content = $content . "<td><form method=\"post\"><button class=\"btn btn-danger\" type=\"submit\" name=\"detach_static_sensor\" value=\"$iterated_id\" >Detach</button></form></td>";
+            $content = $content . "</tr>";
+        }
     }
-
-    foreach($unattached_static_sensors as $iterated_sensor)
-    {
-        $iterated_name = $iterated_sensor['name'];
-        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
-        $content = $content . "<tr>";
-        $content = $content . "<td>$iterated_name</td>";
-        $content = $content . "<td>$iterated_identifier</td>";
-        $content = $content . "<td><button class=\"btn btn-success\" type=\"button\">Attach</button></td>";
-        $content = $content . "</tr>";
+    if(!empty($unattached_static_sensors)) {
+        foreach ($unattached_static_sensors as $iterated_sensor) {
+            $iterated_name = $iterated_sensor['name'];
+            $iterated_id = $iterated_sensor['id'];
+            $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+            $content = $content . "<tr>";
+            $content = $content . "<td>$iterated_name</td>";
+            $content = $content . "<td>$iterated_identifier</td>";
+            $content = $content . "<td><form method=\"post\"><button class=\"btn btn-success\" type=\"submit\" name=\"attach_static_sensor\" value=\"$iterated_id\">Attach</button></form></td>";
+            $content = $content . "</tr>";
+        }
     }
     return $content;
 }
 
 function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_sensors){
     $content = "";
-    foreach($calibrated_sensors as $iterated_sensor)
-    {
-        $iterated_name = $iterated_sensor['name'];
-        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
-        $content = $content . "<tr>";
-        $content = $content . "<td>$iterated_name</td>";
-        $content = $content . "<td>$iterated_identifier</td>";
-        $content = $content . "<td><button class=\"btn btn-danger\" type=\"button\">Detach</button></td>";
-        $content = $content . "</tr>";
+    if(!empty($calibrated_sensors)) {
+        foreach ($calibrated_sensors as $iterated_sensor) {
+            $iterated_name = $iterated_sensor['name'];
+            $iterated_id = $iterated_sensor['id'];
+            $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+            $content = $content . "<tr>";
+            $content = $content . "<td>$iterated_name</td>";
+            $content = $content . "<td>$iterated_identifier</td>";
+            $content = $content . "<td><form method=\"post\"><button class=\"btn btn-danger\" type=\"submit\" name=\"detach_calibrated_sensor\" value=\"$iterated_id\">Detach</button></form></td>";
+            $content = $content . "</tr>";
+        }
     }
-
-    foreach($unattached_calibrated_sensors as $iterated_sensor)
-    {
-        $iterated_name = $iterated_sensor['name'];
-        $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
-        $content = $content . "<tr>";
-        $content = $content . "<td>$iterated_name</td>";
-        $content = $content . "<td>$iterated_identifier</td>";
-        $content = $content . "<td><button class=\"btn btn-success\" type=\"button\">Attach</button></td>";
-        $content = $content . "</tr>";
+    if(!empty($unattached_calibrated_sensors)) {
+        foreach ($unattached_calibrated_sensors as $iterated_sensor) {
+            $iterated_name = $iterated_sensor['name'];
+            $iterated_id = $iterated_sensor['id'];
+            $iterated_identifier = $iterated_sensor['output_identifier'] ?? 0;
+            $content = $content . "<tr>";
+            $content = $content . "<td>$iterated_name</td>";
+            $content = $content . "<td>$iterated_identifier</td>";
+            $content = $content . "<td><form method=\"post\"><button class=\"btn btn-success\" type=\"submit\" name=\"attach_calibrated_sensor\" value=\"$iterated_id\">Attach</button></form></td>";
+            $content = $content . "</tr>";
+        }
     }
     return $content;
 }
@@ -147,9 +193,9 @@ function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_s
             </a>
             <hr class="sidebar-divider my-0">
             <ul class="nav navbar-nav text-light" id="accordionSidebar">
-                <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="entities.html"><i class="fas fa-user"></i><span>Entities</span></a></li>
-                <li class="nav-item"><a class="nav-link" href="table.html"><i class="fas fa-table"></i><span>Plants</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="index.php"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="entities.php"><i class="fas fa-user"></i><span>Entities</span></a></li>
+                <li class="nav-item"><a class="nav-link" href="plants.php"><i class="fas fa-table"></i><span>Plants</span></a></li>
                 <li class="nav-item"></li>
                 <li class="nav-item"></li>
             </ul>
@@ -163,44 +209,6 @@ function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_s
                     <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group"></div>
                     </form>
-                    <ul class="nav navbar-nav flex-nowrap ml-auto">
-                        <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
-                            <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
-                                <form class="form-inline mr-auto navbar-search w-100">
-                                    <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                        <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
-                                    </div>
-                                </form>
-                            </div>
-                        </li>
-                        <li class="nav-item dropdown no-arrow mx-1">
-                            <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"></a>
-                                <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
-                                    <h6 class="dropdown-header">alerts center</h6><a class="d-flex align-items-center dropdown-item" href="#">
-                                        <div class="mr-3">
-                                            <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                                        </div>
-                                        <div><span class="small text-gray-500">December 12, 2019</span>
-                                            <p>A new monthly report is ready to download!</p>
-                                        </div>
-                                    </a><a class="d-flex align-items-center dropdown-item" href="#">
-                                        <div class="mr-3">
-                                            <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                                        </div>
-                                        <div><span class="small text-gray-500">December 7, 2019</span>
-                                            <p>$290.29 has been deposited into your account!</p>
-                                        </div>
-                                    </a><a class="d-flex align-items-center dropdown-item" href="#">
-                                        <div class="mr-3">
-                                            <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                                        </div>
-                                        <div><span class="small text-gray-500">December 2, 2019</span>
-                                            <p>Spending Alert: We've noticed unusually high spending for your account.</p>
-                                        </div>
-                                    </a><a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a>
-                                </div>
-                            </div>
-                        </li>
                         <li class="nav-item dropdown no-arrow mx-1">
                             <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
                         </li>
@@ -251,7 +259,6 @@ function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_s
                                 </form>
                             </div>
                         </div>
-                        <div class="card shadow mb-3"></div>
                     </div>
                     <div class="col-lg-8">
                         <div class="row mb-3 d-none">
@@ -288,7 +295,13 @@ function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_s
                 </div>
                 <div class="row">
                     <div class="col">
-                        <div class="card shadow mb-4">
+                        <div class="card shadow mb-4"
+                            <?php
+                            if(empty($static_sensors) && empty($static_unattached_sensors)) {
+                                echo "hidden";
+                            }
+                            ?>
+                        >
                             <div class="card-header py-3">
                                 <h6 class="text-primary font-weight-bold m-0">Static Sensors</h6>
                             </div>
@@ -311,7 +324,13 @@ function populateCalibratedSensors($calibrated_sensors, $unattached_calibrated_s
                         </div>
                     </div>
                     <div class="col">
-                        <div class="card shadow mb-4">
+                        <div class="card shadow mb-4"
+                            <?php
+                            if(empty($calibrated_sensors) && empty($calibrated_unattached_sensors)) {
+                                echo "hidden";
+                            }
+                            ?>
+                        >
                             <div class="card-header py-3">
                                 <h6 class="text-primary font-weight-bold m-0">Calibrated Sensors</h6>
                             </div>
