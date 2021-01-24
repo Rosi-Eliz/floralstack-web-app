@@ -1,7 +1,7 @@
 <?php
     // General Utilities
     
-    include('./php/definitions.php');
+    require_once('./php/definitions.php');
     function alert($message) {
         echo '<script>alert("' . $message . '")</script>';
     }

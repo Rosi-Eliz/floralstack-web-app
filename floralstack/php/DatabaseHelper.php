@@ -1,9 +1,9 @@
 <?php
 class DatabaseHelper
 {
-    const username = 'c##admin'; // use a + your matriculation number
-    const password = 'admin'; // use your oracle db password
-    const con_string = '//localhost:1521/ORCLCDB.localdomain';
+    const username = $_ENV["DATABASE_USERNAME"];
+    const password = $_ENV["DATABASE_PASSWORD"];
+    const con_string = $_ENV["DATABASE_CONNECTION_URL"];
     protected $conn;
 
     public function __construct()

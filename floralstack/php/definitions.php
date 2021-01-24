@@ -1,6 +1,6 @@
 <?php
-    define("API_ROOT", "http://localhost:8080");
-    define("WEB_ROOT", "http://localhost:8000");
+    define("API_ROOT", $_ENV["API_ROOT"]);
+    define("WEB_ROOT", $_ENV["WEB_ROOT"]);
     define("PLANTS_ENDPOINT", "/api/plants");
     define("DELETE_PLANTS_ENDPOINT", PLANTS_ENDPOINT . "/delete");
     define("SENSORS_ENDPOINT", "/api/sensors");
