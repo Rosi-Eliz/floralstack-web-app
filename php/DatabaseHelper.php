@@ -1,18 +1,15 @@
 <?php
 class DatabaseHelper
 {
-    const username = $_ENV["DATABASE_USERNAME"];
-    const password = $_ENV["DATABASE_PASSWORD"];
-    const con_string = $_ENV["DATABASE_CONNECTION_URL"];
     protected $conn;
 
     public function __construct()
     {
         try {
             $this->conn = oci_connect(
-                DatabaseHelper::username,
-                DatabaseHelper::password,
-                DatabaseHelper::con_string
+                $_ENV["DATABASE_USERNAME"],
+                $_ENV["DATABASE_PASSWORD"],
+                $_ENV["DATABASE_CONNECTION_URL"]
             );
             if (!$this->conn) {
                 die("DB error: Connection can't be established!");
