@@ -2,17 +2,16 @@
 <html>
 <?php
     require_once('./php/utilities.php');
-    require_once('./php/DatabaseHelper.php');
 
     function populateTable()
     {
-        $database = new DatabaseHelper();
-        $plants_count = $database->getAllPlants();
-        $users_count = $database->getAllUsers();
-        $environments_count = $database->getAllEnvironments();
-        $static_sensors_count = $database->getAllStaticSensors();
-        $calibrated_sensors_count = $database->getAllCalibratedSensors();
-        $actuators_count = $database->getAllActuators();
+        $overview = getOverview();
+        $plants_count = $overview['plants_count'];
+        $users_count = $overview['users_count'];
+        $environments_count = $overview['environments_count'];
+        $static_sensors_count = $overview['static_sensors_count'];
+        $calibrated_sensors_count = $overview['calibrated_sensors_count'];
+        $actuators_count = $overview['actuators_count'];
 
         $content = <<<EOT
         <tr>

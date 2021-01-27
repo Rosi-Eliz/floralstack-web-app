@@ -35,6 +35,18 @@
         return makePostRequest($url, $data);
     }
     
+    function createEnvironment($name, $description) {
+        $url = API_ROOT . ENVIRONMENTS_ENDPOINT;
+        $data = array('name' => $name,
+            'description' => $description);
+        return makePostRequest($url, $data);
+    }
+    
+    function getOverview() {
+        $url = API_ROOT . DASHBOARD_ENDPOINT . "/overview" ;
+        return getRequest($url);
+    }
+    
     function getAllPlants() {
         $url = API_ROOT . PLANTS_ENDPOINT;
         return getRequest($url);

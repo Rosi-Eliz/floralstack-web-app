@@ -2,14 +2,14 @@
 <html>
 <?php
     require_once('./php/utilities.php');
-    require_once('./php/DatabaseHelper.php');
-    $database = new DatabaseHelper();
+    
     $users = getAllUsers();
 
     if(isset($_POST['create_environment_modal'])) {
         $name = htmlspecialchars($_REQUEST['name']);
         $description = htmlspecialchars($_REQUEST['description']);
-        $result = $database->createEnvironment($name, $description);
+        
+        $result = createEnvironment($name, $description);
         if($result != 0) {
             header("Refresh:0");
         } else {
