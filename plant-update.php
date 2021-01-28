@@ -25,7 +25,7 @@ if(isset($_POST['update_details'])) {
 
     $result = postUpdatePlant($id, $name, $description, $environment_id, $owner_id);
     if ($result) {
-        alert("Successfully updated plant!");
+        echo '<script>window.location.replace("plants.php");</script>';
     } else {
         alert("Unable to update the plant. Something went wrong!");
     }

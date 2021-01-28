@@ -10,6 +10,15 @@
     $calibrated_sensors = $plant['calibrated_sensors_list'];
     $static_sensors = $plant['static_sensors_list'];
     $description = $plant ? $plant['description'] : "No description";
+    
+    if(isset($_POST['delete'])) {
+        $result = deletePlant($id);
+        if ($result) {
+            echo '<script>window.location.replace("plants.php");</script>';
+        } else {
+            alert("Unable to create the plant. Something went wrong!");
+        }
+    }
 ?>
 <head>
     <meta charset="utf-8">
@@ -148,8 +157,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
                     <form method="post">
-                        <button type="submit" onclick="window.location.href='plants.php';"
-                                class="btn btn-danger" name="delete" >Delete</button>
+                        <button type="submit" class="btn btn-danger" name="delete" >Delete</button>
                     </form>
                 </div>
             </div>
