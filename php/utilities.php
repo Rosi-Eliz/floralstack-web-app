@@ -51,6 +51,11 @@
         $url = API_ROOT . PLANTS_ENDPOINT;
         return getRequest($url);
     }
+    
+    function getPlantsBatch($page, $batch) {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/batch" . "?page={$page}&batch={$batch}";
+        return getRequest($url);
+    }
 
     function getAllPlantsForEnvironment($id) {
         $url = API_ROOT . PLANTS_ENDPOINT . "/environment" . "/{$id}";

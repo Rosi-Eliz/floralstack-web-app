@@ -4,6 +4,9 @@
 $environments = getAllEnvironments() ?? null;
 $users = getAllUsers() ?? null;
 
+$page = $_GET['page'] ?? 1;
+$batch = $_GET['batch'] ?? 20;
+    
 if(isset($_POST['create_plant'])) {
     $name = htmlspecialchars($_REQUEST['name_form']);
     $environment = htmlspecialchars($_REQUEST['environment'] == "0" ? null : $_REQUEST['environment']);
@@ -17,6 +20,15 @@ if(isset($_POST['create_plant'])) {
         alert("Unable to create the plant. Something went wrong!");
     }
 }
+    
+$plantsBatch = getPlantsBatch($page, $batch);
+$plants = $plantsBatch['plants'];
+$lastPage = $plantsBatch['last_page'];
+$currentPage = $plantsBatch['current_page'];
+$batchSize = $plantsBatch['batch_size'];
+$plantsCount = $plantsBatch['plants_count'];
+
+
 ?>
 <head>
     <meta charset="utf-8">
@@ -86,9 +98,21 @@ if(isset($_POST['create_plant'])) {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php echo get_plants(); ?>
+                                        <?php echo get_plants($plants); ?>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 align-self-center">
+                                <p id="dataTable_info" class="dataTables_info" role="status" aria-live="polite"><?php echo getDisplayDetails($currentPage, $lastPage ,$batchSize, $plantsCount); ?></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <nav class="d-lg-flex justify-content-lg-end dataTables_paginate paging_simple_numbers">
+                                        <ul class="pagination">
+                                            <?php echo getPageControl($currentPage, $lastPage); ?>
+                                        </ul>
+                                    </nav>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,12 +169,10 @@ if(isset($_POST['create_plant'])) {
     </div>
 
 <?php
-    function get_plants() {
-
-        $decoded_response = getAllPlants();
+    function get_plants($plants) {
         
         $table_rows = "";
-        foreach ($decoded_response as $result_object) {
+        foreach ($plants as $result_object) {
         $owner = $result_object["owner"];
         $environment = $result_object["environment"];
         $plant_url = getPlantWebPageURL($result_object["id"]);
@@ -160,7 +182,7 @@ if(isset($_POST['create_plant'])) {
             
         $table_row = <<<EOT
           <tr>
-          <td><img class="rounded-circle mr-2" width="30" height="30" src="assets/img/plant.svg"><a href=$plant_url>$result_object[name]<a/></td>
+          <td><img class="rounded-circle mr-2" hidden width="15" height="15" src="assets/img/plant.svg"><a href=$plant_url>$result_object[name]<a/></td>
               <td>$descriptionText</td>
               <td>$name</td>
               <td>$environmentText</td>
@@ -210,6 +232,56 @@ function getUsersOptions($users, $selected_user){
     }
     return $content;
 }
+    
+    function getDisplayDetails($currentPage, $lastPage ,$batchSize, $plantsCount) {
+        $startElement = ($currentPage - 1) * $batchSize + 1;
+        $endElement = $startElement + $batchSize - 1;
+        $endElement = $endElement < $plantsCount ? $endElement : $plantsCount;
+        return "Showing {$startElement} to {$endElement} of {$plantsCount}";
+        
+    }
+    
+    function getPageControl($currentPage, $lastPage) {
+        $previousClass = $currentPage == 1 ? "page-item disabled" : "page-item";
+        $nextClass = $currentPage == $lastPage ? "page-item disabled" : "page-item";
+        
+        $firstEl;
+        $secondEl;
+        $thirdEl;
+        
+        if ($currentPage == 1) {
+            $firstEl = ["page-item active", "plants.php?page=1", "1"];
+            $secondEl = ["page-item", "plants.php?page=2", "2"];
+            $thirdEl = ["page-item", "plants.php?page=3", "3"];
+        } elseif ($currentPage == $lastPage) {
+            $first = $lastPage - 2;
+            $second = $lastPage - 1;
+            $third = $lastPage;
+            
+            $firstEl = ["page-item", "plants.php?page=$first", "$first"];
+            $secondEl = ["page-item", "plants.php?page=$second", "$second"];
+            $thirdEl = ["page-item active", "plants.php?page=$third", "$third"];
+            
+        } else {
+            $first = $currentPage - 1;
+            $second = $currentPage;
+            $third = $currentPage + 1;
+            
+            $firstEl = ["page-item", "plants.php?page=$first", "$first"];
+            $secondEl = ["page-item active", "plants.php?page=$second", "$second"];
+            $thirdEl = ["page-item", "plants.php?page=$third", "$third"];
+        }
+        
+        $content = <<<EOT
+        <li class="$previousClass"><a class="page-link" href="plants.php?page=1" aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+        <li class="$firstEl[0]"><a class="page-link" href="$firstEl[1]">$firstEl[2]</a></li>
+        <li class="$secondEl[0]"><a class="page-link" href="$secondEl[1]">$secondEl[2]</a></li>
+        <li class="$thirdEl[0]"><a class="page-link" href="$thirdEl[1]">$thirdEl[2]</a></li>
+        <li class="$nextClass"><a class="page-link" href="plants.php?page=$lastPage" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+EOT;
+        return $content;
+    }
+    
 ?>
 
     <script src="assets/js/jquery.min.js"></script>
