@@ -2,17 +2,16 @@
 <html>
 <?php
     require_once('./php/utilities.php');
-    require_once('./php/DatabaseHelper.php');
 
     function populateTable()
     {
-        $database = new DatabaseHelper();
-        $plants_count = $database->getAllPlants();
-        $users_count = $database->getAllUsers();
-        $environments_count = $database->getAllEnvironments();
-        $static_sensors_count = $database->getAllStaticSensors();
-        $calibrated_sensors_count = $database->getAllCalibratedSensors();
-        $actuators_count = $database->getAllActuators();
+        $overview = getOverview();
+        $plants_count = $overview['plants_count'];
+        $users_count = $overview['users_count'];
+        $environments_count = $overview['environments_count'];
+        $static_sensors_count = $overview['static_sensors_count'];
+        $calibrated_sensors_count = $overview['calibrated_sensors_count'];
+        $actuators_count = $overview['actuators_count'];
 
         $content = <<<EOT
         <tr>
@@ -46,7 +45,7 @@ EOT;
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Table - Brand</title>
+    <title>Floralstack</title>
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=ABeeZee">
@@ -64,47 +63,7 @@ EOT;
             <div id="content" style="margin-bottom: 0;">
                 <nav class="navbar navbar-light navbar-expand bg-white shadow mb-4 topbar static-top">
                     <div class="container-fluid"><button class="btn btn-link d-md-none rounded-circle mr-3" id="sidebarToggleTop" type="button"><i class="fas fa-bars"></i></button>
-                        <form class="form-inline d-none d-sm-inline-block mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                            <div class="input-group"></div>
-                        </form>
                         <ul class="nav navbar-nav flex-nowrap ml-auto">
-                            <li class="nav-item dropdown d-sm-none no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-search"></i></a>
-                                <div class="dropdown-menu dropdown-menu-right p-3 animated--grow-in" aria-labelledby="searchDropdown">
-                                    <form class="form-inline mr-auto navbar-search w-100">
-                                        <div class="input-group"><input class="bg-light form-control border-0 small" type="text" placeholder="Search for ...">
-                                            <div class="input-group-append"><button class="btn btn-primary py-0" type="button"><i class="fas fa-search"></i></button></div>
-                                        </div>
-                                    </form>
-                                </div>
-                            </li>
-                            <li class="nav-item dropdown no-arrow mx-1">
-                                <div class="nav-item dropdown no-arrow"><a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#"></a>
-                                    <div class="dropdown-menu dropdown-menu-right dropdown-list dropdown-menu-right animated--grow-in">
-                                        <h6 class="dropdown-header">alerts center</h6><a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-primary icon-circle"><i class="fas fa-file-alt text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 12, 2019</span>
-                                                <p>A new monthly report is ready to download!</p>
-                                            </div>
-                                        </a><a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-success icon-circle"><i class="fas fa-donate text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 7, 2019</span>
-                                                <p>$290.29 has been deposited into your account!</p>
-                                            </div>
-                                        </a><a class="d-flex align-items-center dropdown-item" href="#">
-                                            <div class="mr-3">
-                                                <div class="bg-warning icon-circle"><i class="fas fa-exclamation-triangle text-white"></i></div>
-                                            </div>
-                                            <div><span class="small text-gray-500">December 2, 2019</span>
-                                                <p>Spending Alert: We've noticed unusually high spending for your account.</p>
-                                            </div>
-                                        </a><a class="text-center dropdown-item small text-gray-500" href="#">Show All Alerts</a>
-                                    </div>
-                                </div>
-                            </li>
                             <li class="nav-item dropdown no-arrow mx-1">
                                 <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
                             </li>

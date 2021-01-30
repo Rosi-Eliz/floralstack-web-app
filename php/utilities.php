@@ -1,7 +1,7 @@
 <?php
     // General Utilities
     
-    include('./php/definitions.php');
+    require_once('./php/definitions.php');
     function alert($message) {
         echo '<script>alert("' . $message . '")</script>';
     }
@@ -35,8 +35,25 @@
         return makePostRequest($url, $data);
     }
     
+    function createEnvironment($name, $description) {
+        $url = API_ROOT . ENVIRONMENTS_ENDPOINT;
+        $data = array('name' => $name,
+            'description' => $description);
+        return makePostRequest($url, $data);
+    }
+    
+    function getOverview() {
+        $url = API_ROOT . DASHBOARD_ENDPOINT . "/overview" ;
+        return getRequest($url);
+    }
+    
     function getAllPlants() {
         $url = API_ROOT . PLANTS_ENDPOINT;
+        return getRequest($url);
+    }
+    
+    function getPlantsBatch($page, $batch) {
+        $url = API_ROOT . PLANTS_ENDPOINT . "/batch" . "?page={$page}&batch={$batch}";
         return getRequest($url);
     }
 
